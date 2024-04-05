@@ -1,10 +1,18 @@
-export async function getDiffColumns(
-  srcColsInfo: DBObject[],
-  tgtColsInfo: DBObject[]
-) {
-  const diffColumns: Map<string, { source: DBObject; target: DBObject }[]> =
-    new Map();
+function diffTables() {}
 
-  for (const colInfo of srcColsInfo) {
+export async function getDBDiff(
+  srcColsInfo: DBTableColumnsMap,
+  tgtColsInfo: DBTableColumnsMap
+) {
+  const sourceDiff: DBTableColumnsMap = new Map();
+  const targetDiff: DBTableColumnsMap = new Map();
+
+  const tablesUnion = new Set([...srcColsInfo.keys(), ...tgtColsInfo.keys()]);
+
+  for (const table of tablesUnion) {
+    // diff if table T exsist in sourceTable, if not add it to sourceDiff
+    if (!sourceDiff.get(table)) sourceDiff.set(table, []);
+
+    // diff cols
   }
 }

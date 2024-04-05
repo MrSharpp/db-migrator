@@ -1,3 +1,3 @@
-type Column = { name: string };
+export type Column = { name: string };
 
-type DBTableColumnsMap = Map<string, Column[]>;
+export type DBTableColumnsMap = Map<string, Column[]>;
