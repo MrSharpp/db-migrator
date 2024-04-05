@@ -1,4 +1,5 @@
 import { SchemaInspector } from "knex-schema-inspector/dist/types/schema-inspector";
+import { DBTableColumnsMap } from "./types";
 
 type ColumnsInfo = {
   table: string;
@@ -7,9 +8,9 @@ type ColumnsInfo = {
 
 function getTableColumnsMap(colsInfo: ColumnsInfo[]): DBTableColumnsMap {
   return colsInfo.reduce((prev: DBTableColumnsMap, cur) => {
-    const tabCols = prev.get(cur.table) || [];
+    const tabCols = prev.get(cur.table) || new Map();
 
-    tabCols.push({ name: cur.column });
+    tabCols.set(cur.column, {});
 
     return prev;
   }, new Map());
