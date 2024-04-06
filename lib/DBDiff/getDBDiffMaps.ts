@@ -1,17 +1,17 @@
-import { ColumnsMap, DBTableColumnsMap } from "../types";
+import { ColumnMetadataMap, TableColumnsMap } from "../types";
 
 /**
- * Compares the columnsMap for a particular table of source & target.
- * @param {ColumnsMap} sourceColumns - The source columns map to compare.
- * @param {ColumnsMap} targetColumns - The target columns map to compare.
+ * Compares the ColumnMetadataMap for a particular table of source & target.
+ * @param {ColumnMetadataMap} sourceColumns - The source columns map to compare.
+ * @param {ColumnMetadataMap} targetColumns - The target columns map to compare.
  * @returns An object containing the differences between the two sets of columns.
  */
 function diffTablesColumns(
-  sourceColumns: ColumnsMap,
-  targetColumns: ColumnsMap
+  sourceColumns: ColumnMetadataMap,
+  targetColumns: ColumnMetadataMap
 ) {
-  const missingInSource: ColumnsMap = new Map();
-  const missingInTarget: ColumnsMap = new Map();
+  const missingInSource: ColumnMetadataMap = new Map();
+  const missingInTarget: ColumnMetadataMap = new Map();
 
   const allColumns = new Set([
     ...sourceColumns.keys(),
@@ -37,16 +37,16 @@ function diffTablesColumns(
 
 /**
  * Compares two database table columns maps and returns the differences between them.
- * @param {DBTableColumnsMap} sourceTableColumns - The map of columns for the source table.
- * @param {DBTableColumnsMap} targetTableColumns - The map of columns for the target table.
+ * @param {TableColumnsMap} sourceTableColumns - The map of columns for the source table.
+ * @param {TableColumnsMap} targetTableColumns - The map of columns for the target table.
  * @returns An object containing the differences between the source and target table columns maps.
  */
 export async function getDBDiffMaps(
-  sourceTableColumns: DBTableColumnsMap,
-  targetTableColumns: DBTableColumnsMap
+  sourceTableColumns: TableColumnsMap,
+  targetTableColumns: TableColumnsMap
 ) {
-  const missingInSource: DBTableColumnsMap = new Map();
-  const missingInTarget: DBTableColumnsMap = new Map();
+  const missingInSource: TableColumnsMap = new Map();
+  const missingInTarget: TableColumnsMap = new Map();
 
   const allTables = new Set([
     ...sourceTableColumns.keys(),
@@ -61,8 +61,8 @@ export async function getDBDiffMaps(
     const targetColumnsMap = targetTableColumns.get(table);
 
     /**
-     * If the columnsMap is undefined, meaning the tableColumns Map doesn't have
-     * a record for this particular table name, add the table name with an empty columnsMap to the respective differences map.
+     * If the ColumnMetadataMap is undefined, meaning the tableColumns Map doesn't have
+     * a record for this particular table name, add the table name with an empty ColumnMetadataMap to the respective differences map.
      */
     if (!sourceColumnsMap) {
       missingInSource.set(table, new Map());

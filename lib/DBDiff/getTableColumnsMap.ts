@@ -1,14 +1,14 @@
 import { SchemaInspector } from "knex-schema-inspector/dist/types/schema-inspector";
-import { DBTableColumnsMap } from "../types";
+import { TableColumnsMap } from "../types";
 
 /**
  * Retrieves a mapping of table columns from the provided SchemaInspector.
  * @param {SchemaInspector} inspector - The SchemaInspector object used to inspect the schema.
- * @returns {Promise<DBTableColumnsMap>} A promise that resolves to a mapping of table columns.
+ * @returns {Promise<TableColumnsMap>} A promise that resolves to a mapping of table columns.
  */
 export async function getTableColumnsMap(
   inspector: SchemaInspector
-): Promise<DBTableColumnsMap> {
+): Promise<TableColumnsMap> {
   // Retrieve column information from the database schema
   const tableColumns = await inspector.columns();
 
@@ -17,7 +17,7 @@ export async function getTableColumnsMap(
    * a map of its columns.
    */
   return tableColumns.reduce(
-    (tableColumnsMap: DBTableColumnsMap, currentColumn) => {
+    (tableColumnsMap: TableColumnsMap, currentColumn) => {
       /**
        * Retrieve the map of columns for the current table from the previous map,
        * or create a new map if not found.

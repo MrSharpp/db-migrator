@@ -1,5 +1,6 @@
 // usage
 import Knex from "knex";
+import { getDBDiff } from "./DBDiff";
 
 async function main() {
   const dbSource = Knex({
@@ -21,6 +22,8 @@ async function main() {
       database: "mohawk_online",
     },
   });
+
+  const diffs = getDBDiff(dbSource, dbTarget);
 }
 
 main();
