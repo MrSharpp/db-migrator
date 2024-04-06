@@ -1,4 +1,4 @@
-import { ColumnsMap, DBTableColumnsMap } from "./types";
+import { ColumnsMap, DBTableColumnsMap } from "../types";
 
 function diffTables(srcCols: ColumnsMap, targtCols: ColumnsMap) {
   const sourceColumnsDiff: ColumnsMap = new Map();

@@ -1,5 +1,5 @@
 import { SchemaInspector } from "knex-schema-inspector/dist/types/schema-inspector";
-import { DBTableColumnsMap } from "./types";
+import { DBTableColumnsMap } from "../types";
 
 type ColumnsInfo = {
   table: string;

@@ -1,7 +1,7 @@
 // usage
-import { getDBObject } from "./getDBObject";
-import { getDBInspector } from "./getDBInspector";
-import { getDBDiff } from "./getDbDiff";
+import { getDBObject } from "./DBDiff/getDBObject";
+import { getDBInspector } from "./DBDiff/getDBInspector";
+import { getDBDiff } from "./DBDiff/getDbDiff";
 
 async function main() {
   const sourceDBInspector = await getDBInspector({
@@ -28,8 +28,6 @@ async function main() {
   const targetDB = await getDBObject(targetDBInspector);
 
   const result = await getDBDiff(sourceDB, targetDB);
-
-  console.log([...result.targetDiff.values()]);
 }
 
 main();
