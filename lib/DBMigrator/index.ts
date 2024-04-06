@@ -1,11 +1,12 @@
-import { KnexDatabaseInstance, TableColumnsMap } from "../types";
+import { KnexDatabaseInstance, TableOperationsMap } from "../types";
 
 export function migrateDB(
     targetDB: KnexDatabaseInstance,
-    tableColumnsDiff: TableColumnsMap
+    tablesOperationsMap: TableOperationsMap
 ) {
-    for (const row of tableColumnsDiff) {
-        const [tableName, columnsMetaMap] = row;
+    for (const row of tablesOperationsMap) {
+        const [tableName, { columnsOperationMap, tableOperation }] = row;
+
         targetDB.table(tableName);
     }
 }
