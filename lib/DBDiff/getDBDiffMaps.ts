@@ -15,7 +15,7 @@ function diffTables(srcCols: ColumnsMap, targtCols: ColumnsMap) {
   return { sourceColumnsDiff, targetColumnsDiff };
 }
 
-export async function getDBDiff(
+export async function getDBDiffMaps(
   srcColsInfo: DBTableColumnsMap,
   tgtColsInfo: DBTableColumnsMap
 ) {
