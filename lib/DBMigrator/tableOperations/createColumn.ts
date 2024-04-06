@@ -1,7 +1,9 @@
 import { KnexDatabaseInstance } from "../../types";
 
 export function createColumn(
-    columnName: string,
-    columnInfo: Record<string, any>,
+    tableName: string,
+    columnInfo: { name: string; info: Record<string, any> },
     dbInstance: KnexDatabaseInstance
-) {}
+) {
+    dbInstance.schema.alterTable(tableName, function (t) {});
+}

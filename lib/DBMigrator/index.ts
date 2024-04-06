@@ -1,6 +1,6 @@
 import { KnexDatabaseInstance, TableOperationsMap } from "../types";
 
-export function migrateDB(
+export function syncSchema(
     targetDB: KnexDatabaseInstance,
     tablesOperationsMap: TableOperationsMap
 ) {
