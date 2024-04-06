@@ -1,53 +1,87 @@
 import { ColumnsMap, DBTableColumnsMap } from "../types";
 
-function diffTables(srcCols: ColumnsMap, targtCols: ColumnsMap) {
-  const sourceColumnsDiff: ColumnsMap = new Map();
-  const targetColumnsDiff: ColumnsMap = new Map();
+/**
+ * Compares the columnsMap for a particular table of source & target.
+ * @param {ColumnsMap} sourceColumns - The source columns map to compare.
+ * @param {ColumnsMap} targetColumns - The target columns map to compare.
+ * @returns An object containing the differences between the two sets of columns.
+ */
+function diffTablesColumns(
+  sourceColumns: ColumnsMap,
+  targetColumns: ColumnsMap
+) {
+  const missingInSource: ColumnsMap = new Map();
+  const missingInTarget: ColumnsMap = new Map();
 
-  const colsUnion = new Set([...srcCols.keys(), ...targtCols.keys()]);
+  const allColumns = new Set([
+    ...sourceColumns.keys(),
+    ...targetColumns.keys(),
+  ]);
 
-  for (const col of colsUnion) {
-    // check if column C doesnt exsits in targetCols & sourceCols
-    if (!srcCols.get(col)) sourceColumnsDiff.set(col, {});
-    if (!targtCols.get(col)) targetColumnsDiff.set(col, {});
+  for (const column of allColumns) {
+    /**
+     * If the column name doesn't exist in the source table columns map,
+     * add it to the missingInSource map.
+     */
+    if (!sourceColumns.get(column)) missingInSource.set(column, {});
+
+    /**
+     * If the column name doesn't exist in the target table columns map,
+     * add it to the missingInTarget map.
+     */
+    if (!targetColumns.get(column)) missingInTarget.set(column, {});
   }
 
-  return { sourceColumnsDiff, targetColumnsDiff };
+  return { missingInSource, missingInTarget };
 }
 
+/**
+ * Compares two database table columns maps and returns the differences between them.
+ * @param {DBTableColumnsMap} sourceTableColumns - The map of columns for the source table.
+ * @param {DBTableColumnsMap} targetTableColumns - The map of columns for the target table.
+ * @returns An object containing the differences between the source and target table columns maps.
+ */
 export async function getDBDiffMaps(
-  srcColsInfo: DBTableColumnsMap,
-  tgtColsInfo: DBTableColumnsMap
+  sourceTableColumns: DBTableColumnsMap,
+  targetTableColumns: DBTableColumnsMap
 ) {
-  const sourceDiff: DBTableColumnsMap = new Map();
-  const targetDiff: DBTableColumnsMap = new Map();
+  const missingInSource: DBTableColumnsMap = new Map();
+  const missingInTarget: DBTableColumnsMap = new Map();
 
-  const tablesUnion = new Set([...srcColsInfo.keys(), ...tgtColsInfo.keys()]);
+  const allTables = new Set([
+    ...sourceTableColumns.keys(),
+    ...targetTableColumns.keys(),
+  ]);
 
-  for (const table of tablesUnion) {
-    // diff if table T exsist in sourceTable, if not add it to sourceDiff
-    const srcCol = srcColsInfo.get(table);
-    const targtCol = tgtColsInfo.get(table);
+  for (const table of allTables) {
+    /**
+     * Retrieve columns map from source & target.
+     */
+    const sourceColumnsMap = sourceTableColumns.get(table);
+    const targetColumnsMap = targetTableColumns.get(table);
 
-    if (!srcCol) {
-      sourceDiff.set(table, new Map());
-      continue;
+    /**
+     * If the columnsMap is undefined, meaning the tableColumns Map doesn't have
+     * a record for this particular table name, add the table name with an empty columnsMap to the respective differences map.
+     */
+    if (!sourceColumnsMap) {
+      missingInSource.set(table, new Map());
+    } else if (!targetColumnsMap) {
+      missingInTarget.set(table, new Map());
+    } else {
+      /**
+       * If the columns map exists for both source and target, proceed to
+       * diff source and target columns to get the differences.
+       */
+      const { missingInSource, missingInTarget } = diffTablesColumns(
+        sourceColumnsMap,
+        targetColumnsMap
+      );
+
+      missingInSource.set(table, missingInSource);
+      missingInTarget.set(table, missingInTarget);
     }
-    if (!targtCol) {
-      targetDiff.set(table, new Map());
-      continue;
-    }
-
-    // diff cols
-    const { sourceColumnsDiff, targetColumnsDiff } = diffTables(
-      srcCol,
-      targtCol
-    );
-
-    // set the columns diff to respective table name to the respective map
-    sourceDiff.set(table, sourceColumnsDiff);
-    targetDiff.set(table, targetColumnsDiff);
   }
 
-  return { sourceDiff, targetDiff };
+  return { missingInSource, missingInTarget };
 }
