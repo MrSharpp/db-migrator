@@ -1,5 +1,5 @@
 import { SchemaInspector } from "knex-schema-inspector/dist/types/schema-inspector";
-import { Operation, TableMaps } from "../types";
+import { TableMaps } from "../types";
 
 /**
  * Retrieves a mapping of table columns from the provided SchemaInspector.

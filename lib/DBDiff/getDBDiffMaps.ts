@@ -1,28 +1,33 @@
-import { ColumnMetadataMap, TableMaps } from "../types";
+import {
+    ColumnOperationMap,
+    ColumnsMap,
+    Operation,
+    TableMaps,
+    TableOperationsMap,
+} from "../types";
 
 /**
- * Compares the ColumnMetadataMap for a particular table of source & target.
- * @param {ColumnMetadataMap} sourceColumns - The source columns map to compare.
- * @param {ColumnMetadataMap} targetColumns - The target columns map to compare.
+ * Compares the ColumnsMap for a particular table of source & target.
+ * @param {ColumnsMap} sourceColumnsMap - The source columns map to compare.
+ * @param {ColumnsMap} targetColumnsMap - The target columns map to compare.
  * @returns An object containing the differences between the two sets of columns.
  */
 function diffTablesColumns(
-    sourceColumns: ColumnMetadataMap,
-    targetColumns: ColumnMetadataMap
-) {
-    const missingInTarget: ColumnMetadataMap = new Map();
+    sourceColumnsMap: ColumnsMap,
+    targetColumnsMap: ColumnsMap
+): ColumnOperationMap {
+    const missingInTarget: ColumnOperationMap = new Map();
 
-    const allColumns = new Set([
-        ...sourceColumns.keys(),
-        ...targetColumns.keys(),
-    ]);
-
-    for (const column of allColumns) {
+    for (const columnName of sourceColumnsMap.keys()) {
         /**
-         * If the column name doesn't exist in the target table columns map,
+         * If the columnName doesn't exist in the target table columns map,
          * add it to the missingInTarget map.
          */
-        if (!targetColumns.get(column)) missingInTarget.set(column, {});
+        if (!targetColumnsMap.get(columnName))
+            missingInTarget.set(columnName, {
+                colInfo: sourceColumnsMap.get(columnName)!,
+                columnOperation: Operation.INSERT,
+            });
     }
 
     return missingInTarget;
@@ -30,30 +35,22 @@ function diffTablesColumns(
 
 /**
  * Compares two database table columns maps and returns the differences between them.
- * @param {TableMaps} sourceTableColumns - The map of columns for the source table.
+ * @param {TableMaps} sourceTablesMap - The map of columns for the source table.
  * @param {TableMaps} targetTableColumns - The map of columns for the target table.
  * @returns An object containing the differences between the source and target table columns maps.
  */
 export async function getDBDiffMaps(
-    sourceTableColumns: TableMaps,
-    targetTableColumns: TableMaps
-) {
-    const missingInTarget: TableMaps = new Map();
+    sourceTablesMap: TableMaps,
+    targetTablesMap: TableMaps
+): Promise<TableOperationsMap> {
+    const diffTargetTables: TableOperationsMap = new Map();
 
-    for (const tableName of sourceTableColumns.keys()) {
+    for (const tableName of sourceTablesMap.keys()) {
         /**
          * Retrieve columns map from source & target.
          */
-        const sourceColumnsMap = sourceTableColumns.get(tableName) as TableMaps;
-        const targetColumnsMap = targetTableColumns.get(tableName);
-
-        /**
-         * if the targetColumnsMap is not found means this table doesnt exsits in targetDB
-         */
-        if (!targetColumnsMap) {
-            missingInTarget.set(tableName, new Map());
-            continue;
-        }
+        const sourceColumnsMap = sourceTablesMap.get(tableName)!;
+        const targetColumnsMap = targetTablesMap.get(tableName);
 
         /**
          * If the columns map exists for both source and target, proceed to
@@ -61,11 +58,26 @@ export async function getDBDiffMaps(
          */
         const columnsMissing = diffTablesColumns(
             sourceColumnsMap,
-            targetColumnsMap
+            targetColumnsMap || new Map()
         );
 
-        missingInTarget.set(tableName, columnsMissing);
+        /**
+         * If there is no columns missing in targetDB then dont add to diffTargetTables
+         */
+        if (!columnsMissing.size) continue;
+
+        /**
+         * If the targetColumns doesnt exist in targetDB then tableOperation will be INSERT otherwise it will be UPDATE
+         */
+        const tableOperation = !targetTablesMap
+            ? Operation.INSERT
+            : Operation.UPDATE;
+
+        diffTargetTables.set(tableName, {
+            columnsOperationMap: columnsMissing,
+            tableOperation,
+        });
     }
 
-    return missingInTarget;
+    return diffTargetTables;
 }

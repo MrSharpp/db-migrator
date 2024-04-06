@@ -1,6 +1,6 @@
 import { Knex } from "knex";
 
-export type ColumnMetadataMap = Map<string, {}>;
+export type ColumnsMap = Map<string, {}>;
 
 export enum Operation {
     INSERT,
@@ -8,11 +8,19 @@ export enum Operation {
     DELETE,
 }
 
-export type TableMaps = Map<string, ColumnMetadataMap>;
+export type TableMaps = Map<string, ColumnsMap>;
 
 export type TableOperationsMap = Map<
     string,
-    { columns: ColumnMetadataMap; operation: Operation }
+    { columnsOperationMap: ColumnOperationMap; tableOperation: Operation }
+>;
+
+export type ColumnOperationMap = Map<
+    string,
+    {
+        colInfo: Record<string, string>;
+        columnOperation: Operation;
+    }
 >;
 
 export type KnexDatabaseInstance = Knex<any>;
