@@ -9,26 +9,29 @@ import { DBTableColumnsMap } from "../types";
 export async function getTableColumnsMap(
   inspector: SchemaInspector
 ): Promise<DBTableColumnsMap> {
+  // Retrieve column information from the database schema
   const tableColumns = await inspector.columns();
 
   /**
-   * Reducing the cableColumns Array {table: string, column: string} into a Map with <tableName, columnsMap<columnName, {}>>
+   * Reduce the tableColumns array into a map where each table name maps to
+   * a map of its columns.
    */
   return tableColumns.reduce((prev: DBTableColumnsMap, cur) => {
     /**
-     * Retrieves the Map of tabCols for the given table from the previous Map, or creates a new Map if not found.
+     * Retrieve the map of columns for the current table from the previous map,
+     * or create a new map if not found.
      */
     const columnsMap = prev.get(cur.table) || new Map();
 
     /**
-     * Set the columns map, with column name and an empty object
-     * NOTE: Empty object is intented for future use, to store meta info about a particular columns
-     * like indices
+     * Add the current column to the columns map for the table.
+     * An empty object is used to store potential metadata about the column,
+     * such as indices, in future implementations.
      */
     columnsMap.set(cur.column, {});
 
     /**
-     * Now finally setting the columns mapping to main map object with key as table name
+     * Update the main map with the columns map for the current table.
      */
     prev.set(cur.table, columnsMap);
 
