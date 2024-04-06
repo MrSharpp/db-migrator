@@ -10,7 +10,7 @@ import {
  * Compares the ColumnsMap for a particular table of source & target.
  * @param {ColumnsMap} sourceColumnsMap - The source columns map to compare.
  * @param {ColumnsMap} targetColumnsMap - The target columns map to compare.
- * @returns An object containing the differences between the two sets of columns.
+ * @returns A map containing columns operations map
  */
 function getColumnsDiff(
     sourceColumnsMap: ColumnsMap,
@@ -37,7 +37,7 @@ function getColumnsDiff(
  * Compares two database table columns maps and returns the differences between them.
  * @param {TableMaps} sourceTablesMap - The map of columns for the source table.
  * @param {TableMaps} targetTableColumns - The map of columns for the target table.
- * @returns An object containing the differences between the source and target table columns maps.
+ * @returns tables operations map
  */
 export async function getTablesDiff(
     sourceTablesMap: TableMaps,

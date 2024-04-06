@@ -7,7 +7,7 @@ import { getTablesDiff } from "./getTablesDiff";
  * Retrieves the difference between the database schemas of two Knex instances.
  * @param {KnexDatabaseInstance} sourceDB - The source Knex instance.
  * @param {KnexDatabaseInstance} targetDB - The target Knex instance.
- * @returns {Promise<TableMaps>} A promise that resolves once the comparison is complete.
+ * @returns {Promise<TableOperationsMap>} returns table operations map
  */
 export async function getDBDiff(
     sourceDB: KnexDatabaseInstance,
