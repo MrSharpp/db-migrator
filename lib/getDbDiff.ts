@@ -1,18 +1,19 @@
 import { ColumnsMap, DBTableColumnsMap } from "./types";
 
 function diffTables(srcCols: ColumnsMap, targtCols: ColumnsMap) {
-  const sourceDiff: ColumnsMap = new Map();
-  const targetDiff: ColumnsMap = new Map();
+  const sourceColumnsDiff: ColumnsMap = new Map();
+  const targetColumnsDiff: ColumnsMap = new Map();
 
   const colsUnion = new Set([...srcCols.keys(), ...targtCols.keys()]);
 
   for (const col of colsUnion) {
-    // check if column C doesnt exsits in targetCols
-    if (!srcCols.get(col)) sourceDiff.set(col, {});
-    if (!targtCols.get(col)) targetDiff.set(col, {});
+    debugger;
+    // check if column C doesnt exsits in targetCols & sourceCols
+    if (!srcCols.get(col)) sourceColumnsDiff.set(col, {});
+    if (!targtCols.get(col)) targetColumnsDiff.set(col, {});
   }
 
-  return { sourceDiff, targetDiff };
+  return { sourceColumnsDiff, targetColumnsDiff };
 }
 
 export async function getDBDiff(
@@ -39,6 +40,15 @@ export async function getDBDiff(
     }
 
     // diff cols
-    const colsDiff = diffTables(srcCol, targtCol);
+    const { sourceColumnsDiff, targetColumnsDiff } = diffTables(
+      srcCol,
+      targtCol
+    );
+
+    // set the columns diff to respective table name to the respective map
+    sourceDiff.set(table, sourceColumnsDiff);
+    targetDiff.set(table, targetColumnsDiff);
   }
+
+  return { sourceDiff, targetDiff };
 }
