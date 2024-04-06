@@ -12,7 +12,7 @@ import {
  * @param {ColumnsMap} targetColumnsMap - The target columns map to compare.
  * @returns An object containing the differences between the two sets of columns.
  */
-function diffTablesColumns(
+function getColumnsDiff(
     sourceColumnsMap: ColumnsMap,
     targetColumnsMap: ColumnsMap
 ): ColumnOperationMap {
@@ -39,7 +39,7 @@ function diffTablesColumns(
  * @param {TableMaps} targetTableColumns - The map of columns for the target table.
  * @returns An object containing the differences between the source and target table columns maps.
  */
-export async function getDBDiffMaps(
+export async function getTablesDiff(
     sourceTablesMap: TableMaps,
     targetTablesMap: TableMaps
 ): Promise<TableOperationsMap> {
@@ -56,7 +56,7 @@ export async function getDBDiffMaps(
          * If the columns map exists for both source and target, proceed to
          * diff source and target columns to get the missing columns in target.
          */
-        const columnsMissing = diffTablesColumns(
+        const columnsMissing = getColumnsDiff(
             sourceColumnsMap,
             targetColumnsMap || new Map()
         );
