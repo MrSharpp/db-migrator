@@ -1,10 +1,10 @@
 // usage
 import { getDBColumnsMap } from "./DBDiff/getDBColumnsMap";
-import { getSchemaInspector } from "./DBDiff/getSchemaInspector";
 import { getDBDiffMaps } from "./DBDiff/getDBDiffMaps";
+import Knex from "knex";
 
 async function main() {
-  const sourceDBInspector = await getSchemaInspector({
+  const dbSource = Knex({
     client: "mysql2",
     connection: {
       host: "localhost",
@@ -14,7 +14,7 @@ async function main() {
     },
   });
 
-  const targetDBInspector = await getSchemaInspector({
+  const dbTarget = Knex({
     client: "mysql2",
     connection: {
       host: "localhost",
