@@ -1,6 +1,4 @@
 // usage
-import { getDBColumnsMap } from "./DBDiff/getDBColumnsMap";
-import { getDBDiffMaps } from "./DBDiff/getDBDiffMaps";
 import Knex from "knex";
 
 async function main() {
@@ -23,11 +21,6 @@ async function main() {
       database: "mohawk_online",
     },
   });
-
-  const sourceDB = await getDBColumnsMap(sourceDBInspector);
-  const targetDB = await getDBColumnsMap(targetDBInspector);
-
-  const result = await getDBDiffMaps(sourceDB, targetDB);
 }
 
 main();

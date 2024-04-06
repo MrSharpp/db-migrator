@@ -16,25 +16,29 @@ export async function getTableColumnsMap(
    * Reduce the tableColumns array into a map where each table name maps to
    * a map of its columns.
    */
-  return tableColumns.reduce((prev: DBTableColumnsMap, cur) => {
-    /**
-     * Retrieve the map of columns for the current table from the previous map,
-     * or create a new map if not found.
-     */
-    const columnsMap = prev.get(cur.table) || new Map();
+  return tableColumns.reduce(
+    (tableColumnsMap: DBTableColumnsMap, currentColumn) => {
+      /**
+       * Retrieve the map of columns for the current table from the previous map,
+       * or create a new map if not found.
+       */
+      const columnsMapForTable =
+        tableColumnsMap.get(currentColumn.table) || new Map();
 
-    /**
-     * Add the current column to the columns map for the table.
-     * An empty object is used to store potential metadata about the column,
-     * such as indices, in future implementations.
-     */
-    columnsMap.set(cur.column, {});
+      /**
+       * Add the current column to the columns map for the table.
+       * An empty object is used to store potential metadata about the column,
+       * such as indices, in future implementations.
+       */
+      columnsMapForTable.set(currentColumn.column, {});
 
-    /**
-     * Update the main map with the columns map for the current table.
-     */
-    prev.set(cur.table, columnsMap);
+      /**
+       * Update the main map with the columns map for the current table.
+       */
+      tableColumnsMap.set(currentColumn.table, columnsMapForTable);
 
-    return prev;
-  }, new Map());
+      return tableColumnsMap;
+    },
+    new Map()
+  );
 }
