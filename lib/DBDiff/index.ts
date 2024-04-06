@@ -1,5 +1,5 @@
 import SchemaInspector from "knex-schema-inspector";
-import { KnexInstance } from "../types";
+import { DBTableColumnsMap, KnexInstance } from "../types";
 import { getTableColumnsMap } from "./getTableColumnsMap";
 import { getDBDiffMaps } from "./getDBDiffMaps";
 
@@ -12,7 +12,10 @@ import { getDBDiffMaps } from "./getDBDiffMaps";
 export async function getDBDiff(
   sourceDB: KnexInstance,
   targetDB: KnexInstance
-): Promise<void> {
+): Promise<{
+  missingInSource: DBTableColumnsMap;
+  missingInTarget: DBTableColumnsMap;
+}> {
   // Create SchemaInspector instances for both source and target databases
   const sourceSchemaInspector = SchemaInspector(sourceDB);
   const targetSchemaInspector = SchemaInspector(targetDB);
@@ -22,5 +25,5 @@ export async function getDBDiff(
   const targetDBMap = await getTableColumnsMap(targetSchemaInspector);
 
   // Get the differences between the database schema maps of source and target databases
-  const result = await getDBDiffMaps(sourceDBMap, targetDBMap);
+  return getDBDiffMaps(sourceDBMap, targetDBMap);
 }
