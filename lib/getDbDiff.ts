@@ -7,7 +7,6 @@ function diffTables(srcCols: ColumnsMap, targtCols: ColumnsMap) {
   const colsUnion = new Set([...srcCols.keys(), ...targtCols.keys()]);
 
   for (const col of colsUnion) {
-    debugger;
     // check if column C doesnt exsits in targetCols & sourceCols
     if (!srcCols.get(col)) sourceColumnsDiff.set(col, {});
     if (!targtCols.get(col)) targetColumnsDiff.set(col, {});

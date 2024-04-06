@@ -6,11 +6,13 @@ type ColumnsInfo = {
   column: string;
 };
 
-function getTableColumnsMap(colsInfo: ColumnsInfo[]): DBTableColumnsMap {
-  return colsInfo.reduce((prev: DBTableColumnsMap, cur) => {
+function getTableColumnsMap(tableCols: ColumnsInfo[]): DBTableColumnsMap {
+  return tableCols.reduce((prev: DBTableColumnsMap, cur) => {
     const tabCols = prev.get(cur.table) || new Map();
 
     tabCols.set(cur.column, {});
+
+    prev.set(cur.table, tabCols);
 
     return prev;
   }, new Map());
