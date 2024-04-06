@@ -11,6 +11,9 @@ export async function getTableColumnsMap(
 ): Promise<DBTableColumnsMap> {
   const tableColumns = await inspector.columns();
 
+  /**
+   * Reducing the cableColumns Array {table: string, column: string} into a Map with <tableName, columnsMap<columnName, {}>>
+   */
   return tableColumns.reduce((prev: DBTableColumnsMap, cur) => {
     /**
      * Retrieves the Map of tabCols for the given table from the previous Map, or creates a new Map if not found.
