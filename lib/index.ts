@@ -1,10 +1,10 @@
 // usage
 import { getDBColumnsMap } from "./DBDiff/getDBColumnsMap";
-import { getDBInspector } from "./DBDiff/getDBInspector";
+import { getSchemaInspector } from "./DBDiff/getSchemaInspector";
 import { getDBDiff } from "./DBDiff/getDbDiff";
 
 async function main() {
-  const sourceDBInspector = await getDBInspector({
+  const sourceDBInspector = await getSchemaInspector({
     client: "mysql2",
     connection: {
       host: "localhost",
@@ -14,7 +14,7 @@ async function main() {
     },
   });
 
-  const targetDBInspector = await getDBInspector({
+  const targetDBInspector = await getSchemaInspector({
     client: "mysql2",
     connection: {
       host: "localhost",
