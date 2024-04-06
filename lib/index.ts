@@ -1,5 +1,5 @@
 // usage
-import { getDBObject } from "./DBDiff/getDBObject";
+import { getDBColumnsMap } from "./DBDiff/getDBColumnsMap";
 import { getDBInspector } from "./DBDiff/getDBInspector";
 import { getDBDiff } from "./DBDiff/getDbDiff";
 
@@ -24,8 +24,8 @@ async function main() {
     },
   });
 
-  const sourceDB = await getDBObject(sourceDBInspector);
-  const targetDB = await getDBObject(targetDBInspector);
+  const sourceDB = await getDBColumnsMap(sourceDBInspector);
+  const targetDB = await getDBColumnsMap(targetDBInspector);
 
   const result = await getDBDiff(sourceDB, targetDB);
 }

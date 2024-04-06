@@ -18,7 +18,7 @@ function getTableColumnsMap(tableCols: ColumnsInfo[]): DBTableColumnsMap {
   }, new Map());
 }
 
-export async function getDBObject(
+export async function getDBColumnsMap(
   inspector: SchemaInspector
 ): Promise<DBTableColumnsMap> {
   const tableColumns = await inspector.columns();
