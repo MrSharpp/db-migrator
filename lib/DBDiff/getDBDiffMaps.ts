@@ -1,4 +1,4 @@
-import { ColumnMetadataMap, TableColumnsMap } from "../types";
+import { ColumnMetadataMap, TableMaps } from "../types";
 
 /**
  * Compares the ColumnMetadataMap for a particular table of source & target.
@@ -7,81 +7,65 @@ import { ColumnMetadataMap, TableColumnsMap } from "../types";
  * @returns An object containing the differences between the two sets of columns.
  */
 function diffTablesColumns(
-  sourceColumns: ColumnMetadataMap,
-  targetColumns: ColumnMetadataMap
+    sourceColumns: ColumnMetadataMap,
+    targetColumns: ColumnMetadataMap
 ) {
-  const missingInSource: ColumnMetadataMap = new Map();
-  const missingInTarget: ColumnMetadataMap = new Map();
+    const missingInTarget: ColumnMetadataMap = new Map();
 
-  const allColumns = new Set([
-    ...sourceColumns.keys(),
-    ...targetColumns.keys(),
-  ]);
+    const allColumns = new Set([
+        ...sourceColumns.keys(),
+        ...targetColumns.keys(),
+    ]);
 
-  for (const column of allColumns) {
-    /**
-     * If the column name doesn't exist in the source table columns map,
-     * add it to the missingInSource map.
-     */
-    if (!sourceColumns.get(column)) missingInSource.set(column, {});
+    for (const column of allColumns) {
+        /**
+         * If the column name doesn't exist in the target table columns map,
+         * add it to the missingInTarget map.
+         */
+        if (!targetColumns.get(column)) missingInTarget.set(column, {});
+    }
 
-    /**
-     * If the column name doesn't exist in the target table columns map,
-     * add it to the missingInTarget map.
-     */
-    if (!targetColumns.get(column)) missingInTarget.set(column, {});
-  }
-
-  return { missingInSource, missingInTarget };
+    return missingInTarget;
 }
 
 /**
  * Compares two database table columns maps and returns the differences between them.
- * @param {TableColumnsMap} sourceTableColumns - The map of columns for the source table.
- * @param {TableColumnsMap} targetTableColumns - The map of columns for the target table.
+ * @param {TableMaps} sourceTableColumns - The map of columns for the source table.
+ * @param {TableMaps} targetTableColumns - The map of columns for the target table.
  * @returns An object containing the differences between the source and target table columns maps.
  */
 export async function getDBDiffMaps(
-  sourceTableColumns: TableColumnsMap,
-  targetTableColumns: TableColumnsMap
+    sourceTableColumns: TableMaps,
+    targetTableColumns: TableMaps
 ) {
-  const missingInSource: TableColumnsMap = new Map();
-  const missingInTarget: TableColumnsMap = new Map();
+    const missingInTarget: TableMaps = new Map();
 
-  const allTables = new Set([
-    ...sourceTableColumns.keys(),
-    ...targetTableColumns.keys(),
-  ]);
+    for (const tableName of sourceTableColumns.keys()) {
+        /**
+         * Retrieve columns map from source & target.
+         */
+        const sourceColumnsMap = sourceTableColumns.get(tableName) as TableMaps;
+        const targetColumnsMap = targetTableColumns.get(tableName);
 
-  for (const table of allTables) {
-    /**
-     * Retrieve columns map from source & target.
-     */
-    const sourceColumnsMap = sourceTableColumns.get(table);
-    const targetColumnsMap = targetTableColumns.get(table);
+        /**
+         * if the targetColumnsMap is not found means this table doesnt exsits in targetDB
+         */
+        if (!targetColumnsMap) {
+            missingInTarget.set(tableName, new Map());
+            continue;
+        }
 
-    /**
-     * If the ColumnMetadataMap is undefined, meaning the tableColumns Map doesn't have
-     * a record for this particular table name, add the table name with an empty ColumnMetadataMap to the respective differences map.
-     */
-    if (!sourceColumnsMap) {
-      missingInSource.set(table, new Map());
-    } else if (!targetColumnsMap) {
-      missingInTarget.set(table, new Map());
-    } else {
-      /**
-       * If the columns map exists for both source and target, proceed to
-       * diff source and target columns to get the differences.
-       */
-      const { missingInSource, missingInTarget } = diffTablesColumns(
-        sourceColumnsMap,
-        targetColumnsMap
-      );
+        /**
+         * If the columns map exists for both source and target, proceed to
+         * diff source and target columns to get the missing columns in target.
+         */
+        const columnsMissing = diffTablesColumns(
+            sourceColumnsMap,
+            targetColumnsMap
+        );
 
-      missingInSource.set(table, missingInSource);
-      missingInTarget.set(table, missingInTarget);
+        missingInTarget.set(tableName, columnsMissing);
     }
-  }
 
-  return { missingInSource, missingInTarget };
+    return missingInTarget;
 }
